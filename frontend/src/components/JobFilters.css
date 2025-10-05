@@ -1,0 +1,247 @@
+.job-filters {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f0f0f0;
+  position: sticky;
+  top: 100px;
+}
+
+.filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.filters-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.clear-filters-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.clear-filters-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.filters-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.filter-input,
+.filter-select {
+  padding: 12px 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.filter-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+  appearance: none;
+}
+
+.salary-inputs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* Min | to | Max */
+  align-items: center;
+  gap: 10px;
+}
+
+.salary-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.salary-separator {
+  color: #6c757d;
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  padding: 0 6px;
+}
+
+.apply-filters-btn {
+  background: linear-gradient(45deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.apply-filters-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.apply-filters-btn:active {
+  transform: translateY(0);
+}
+
+/* Filter group animations */
+.filter-group {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.filter-group:nth-child(1) { animation-delay: 0.1s; }
+.filter-group:nth-child(2) { animation-delay: 0.2s; }
+.filter-group:nth-child(3) { animation-delay: 0.3s; }
+.filter-group:nth-child(4) { animation-delay: 0.4s; }
+.filter-group:nth-child(5) { animation-delay: 0.5s; }
+.filter-group:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .job-filters {
+    position: static;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .job-filters {
+    padding: 20px;
+  }
+
+  .filters-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .filters-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .salary-inputs {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .salary-separator {
+    text-align: center;
+    padding: 5px 0;
+  }
+
+  .apply-filters-btn {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-filters {
+    padding: 15px;
+  }
+
+  .filter-input,
+  .filter-select {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .apply-filters-btn {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .job-filters {
+    background: #2c3e50;
+    border-color: #4a5f7a;
+  }
+
+  .filters-header {
+    border-bottom-color: #4a5f7a;
+  }
+
+  .filters-header h3 {
+    color: white;
+  }
+
+  .filter-group label {
+    color: #bdc3c7;
+  }
+
+  .filter-input,
+  .filter-select {
+    background: #34495e;
+    border-color: #4a5f7a;
+    color: white;
+  }
+
+  .filter-input:focus,
+  .filter-select:focus {
+    background: #2c3e50;
+    border-color: #667eea;
+  }
+
+  .salary-separator {
+    color: #bdc3c7;
+  }
+}
