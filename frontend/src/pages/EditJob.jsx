@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
-const EditJob: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const EditJob = () => {
+  const { id } = useParams();
 
   return (
     <div className="edit-job-container">

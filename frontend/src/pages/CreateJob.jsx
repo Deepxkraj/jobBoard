@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jobsAPI } from '../services/api';
-import { Job } from '../types';
 import './CreateJob.css';
 
-const CreateJob: React.FC = () => {
+const CreateJob = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState([]);
 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     location: '',
-    type: 'full-time' as Job['type'],
+    type: 'full-time',
     category: '',
     salary: {
       min: '',
       max: '',
       currency: 'USD',
-      period: 'yearly' as 'hourly' | 'monthly' | 'yearly'
+      period: 'yearly'
     },
     requirements: {
-      experience: 'entry' as 'entry' | 'mid' | 'senior' | 'executive',
-      skills: [] as string[],
+      experience: 'entry',
+      skills: [],
       education: ''
     },
-    benefits: [] as string[],
+    benefits: [],
     applicationDeadline: '',
     isRemote: false
   });
@@ -34,8 +33,8 @@ const CreateJob: React.FC = () => {
   const [skillInput, setSkillInput] = useState('');
   const [benefitInput, setBenefitInput] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     
     if (name.startsWith('salary.')) {
       const salaryField = name.split('.')[1];
@@ -58,7 +57,7 @@ const CreateJob: React.FC = () => {
     } else {
       setFormData(prev => ({
         ...prev,
-        [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+        [name]: type === 'checkbox' ? checked : value
       }));
     }
   };
@@ -76,7 +75,7 @@ const CreateJob: React.FC = () => {
     }
   };
 
-  const removeSkill = (skillToRemove: string) => {
+  const removeSkill = (skillToRemove) => {
     setFormData(prev => ({
       ...prev,
       requirements: {
@@ -96,7 +95,7 @@ const CreateJob: React.FC = () => {
     }
   };
 
-  const removeBenefit = (benefitToRemove: string) => {
+  const removeBenefit = (benefitToRemove) => {
     setFormData(prev => ({
       ...prev,
       benefits: prev.benefits.filter(benefit => benefit !== benefitToRemove)
@@ -104,7 +103,7 @@ const CreateJob: React.FC = () => {
   };
 
   const validateForm = () => {
-    const newErrors: string[] = [];
+    const newErrors = [];
 
     if (!formData.title.trim()) newErrors.push('Job title is required');
     if (formData.title.trim().length < 5) newErrors.push('Job title must be at least 5 characters');
@@ -140,7 +139,7 @@ const CreateJob: React.FC = () => {
     return newErrors;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const validationErrors = validateForm();
@@ -166,10 +165,10 @@ const CreateJob: React.FC = () => {
 
       await jobsAPI.createJob(jobData);
       navigate('/dashboard');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Job creation error:', error);
       if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors.map((err: any) => err.msg));
+        setErrors(error.response.data.errors.map((err) => err.msg));
       } else {
         setErrors([error.response?.data?.message || 'Failed to create job']);
       }

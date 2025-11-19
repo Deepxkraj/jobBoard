@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { applicationsAPI } from '../services/api';
-import { Application } from '../types';
 import './Applications.css';
 
-const Applications: React.FC = () => {
+const EmployerApplications = () => {
   const { user, isAuthenticated } = useAuth();
-  const [applications, setApplications] = useState<Application[]>([]);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     status: '',
     page: 1,
@@ -27,30 +26,29 @@ const Applications: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('User authentication status:', { user, isAuthenticated });
-      console.log('Fetching applications with filters:', filters);
+      console.log('Fetching applications for employer:', user?.email);
       const response = await applicationsAPI.getApplications(filters);
       console.log('Applications response:', response.data);
       setApplications(response.data.applications);
       setPagination(response.data.pagination);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error fetching applications:', err);
       console.error('Error response:', err.response?.data);
       setError(err.response?.data?.message || 'Failed to fetch applications');
     } finally {
       setLoading(false);
     }
-  }, [filters, user, isAuthenticated]);
+  }, [filters, user]);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user?.role === 'employer') {
       fetchApplications();
     } else {
       setLoading(false);
     }
-  }, [fetchApplications, isAuthenticated]);
+  }, [fetchApplications, isAuthenticated, user]);
 
-  const handleFilterChange = (newFilters: Partial<typeof filters>) => {
+  const handleFilterChange = (newFilters) => {
     setFilters(prev => ({
       ...prev,
       ...newFilters,
@@ -58,30 +56,29 @@ const Applications: React.FC = () => {
     }));
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page) => {
     setFilters(prev => ({
       ...prev,
       page
     }));
   };
 
-  const handleWithdrawApplication = async (applicationId: string) => {
-    if (!window.confirm('Are you sure you want to withdraw this application?')) {
-      return;
-    }
-
+  const handleStatusUpdate = async (applicationId, newStatus) => {
     try {
-      await applicationsAPI.withdrawApplication(applicationId);
-      setApplications(prev => 
-        prev.filter(app => app._id !== applicationId)
-      );
-    } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to withdraw application');
+      await applicationsAPI.updateApplicationStatus(applicationId, { 
+        status: newStatus,
+        notes: `Status updated to ${newStatus}`
+      });
+      
+      // Refresh applications
+      await fetchApplications();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to update application status');
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: { [key: string]: string } = {
+  const getStatusColor = (status) => {
+    const colors = {
       'pending': '#ffc107',
       'reviewed': '#17a2b8',
       'shortlisted': '#28a745',
@@ -91,17 +88,12 @@ const Applications: React.FC = () => {
     return colors[status] || '#6c757d';
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     });
-  };
-
-  // Helper function to calculate days since applied
-  const getDaysSinceApplied = (appliedAt: string): number => {
-    return Math.floor((new Date().getTime() - new Date(appliedAt).getTime()) / (1000 * 60 * 60 * 24));
   };
 
   if (loading) {
@@ -115,13 +107,13 @@ const Applications: React.FC = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || user?.role !== 'employer') {
     return (
       <div className="applications-container">
         <div className="container">
           <div className="applications-header">
-            <h1>My Applications</h1>
-            <p>Please log in to view your applications</p>
+            <h1>Manage Applications</h1>
+            <p>This page is only accessible to employers</p>
           </div>
         </div>
       </div>
@@ -132,8 +124,8 @@ const Applications: React.FC = () => {
     <div className="applications-container">
       <div className="container">
         <div className="applications-header">
-          <h1>My Applications</h1>
-          <p>Track the status of your job applications</p>
+          <h1>Manage Applications</h1>
+          <p>Review and manage job applications</p>
         </div>
 
         <div className="applications-content">
@@ -169,9 +161,9 @@ const Applications: React.FC = () => {
             <div className="no-applications">
               <div className="no-applications-icon">📝</div>
               <h3>No applications found</h3>
-              <p>You haven't applied for any jobs yet.</p>
-              <Link to="/jobs" className="btn btn-primary">
-                Browse Jobs
+              <p>No applications have been submitted for your jobs yet.</p>
+              <Link to="/create-job" className="btn btn-primary">
+                Post a Job
               </Link>
             </div>
           ) : (
@@ -190,6 +182,10 @@ const Applications: React.FC = () => {
                         <div className="job-details">
                           <span className="job-location">📍 {application.job.location}</span>
                           <span className="job-type">💼 {application.job.type}</span>
+                        </div>
+                        <div className="applicant-info">
+                          <h4>Applicant: {application.applicant.name}</h4>
+                          <p>Email: {application.applicant.email}</p>
                         </div>
                       </div>
                       <div className="application-status">
@@ -214,12 +210,6 @@ const Applications: React.FC = () => {
                             <span className="meta-value">{formatDate(application.reviewedAt)}</span>
                           </div>
                         )}
-                        <div className="meta-item">
-                          <span className="meta-label">Days since applied:</span>
-                          <span className="meta-value">
-                            {getDaysSinceApplied(application.appliedAt)} days
-                          </span>
-                        </div>
                       </div>
 
                       {application.coverLetter && (
@@ -231,7 +221,7 @@ const Applications: React.FC = () => {
 
                       {application.notes && (
                         <div className="employer-notes">
-                          <h4>Employer Notes</h4>
+                          <h4>Notes</h4>
                           <p>{application.notes}</p>
                         </div>
                       )}
@@ -244,14 +234,58 @@ const Applications: React.FC = () => {
                       >
                         View Job
                       </Link>
-                      {application.status === 'pending' && (
-                        <button
-                          onClick={() => handleWithdrawApplication(application._id)}
-                          className="btn btn-danger btn-sm"
+                      
+                      <Link 
+                        to={`/profile/${application.applicant._id}`} 
+                        className="btn btn-info btn-sm"
+                      >
+                        View Profile
+                      </Link>
+                      
+                      {application.resume && (
+                        <a 
+                          href={application.resume} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="btn btn-success btn-sm"
                         >
-                          Withdraw
-                        </button>
+                          View Resume
+                        </a>
                       )}
+                      
+                      <div className="status-actions">
+                        <button
+                          onClick={() => handleStatusUpdate(application._id, 'reviewed')}
+                          className="btn btn-info btn-sm"
+                          disabled={application.status === 'reviewed'}
+                        >
+                          Mark as Reviewed
+                        </button>
+                        
+                        <button
+                          onClick={() => handleStatusUpdate(application._id, 'shortlisted')}
+                          className="btn btn-success btn-sm"
+                          disabled={application.status === 'shortlisted'}
+                        >
+                          Shortlist
+                        </button>
+                        
+                        <button
+                          onClick={() => handleStatusUpdate(application._id, 'accepted')}
+                          className="btn btn-primary btn-sm"
+                          disabled={application.status === 'accepted'}
+                        >
+                          Accept
+                        </button>
+                        
+                        <button
+                          onClick={() => handleStatusUpdate(application._id, 'rejected')}
+                          className="btn btn-danger btn-sm"
+                          disabled={application.status === 'rejected'}
+                        >
+                          Reject
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -314,4 +348,4 @@ const Applications: React.FC = () => {
   );
 };
 
-export default Applications;
+export default EmployerApplications;

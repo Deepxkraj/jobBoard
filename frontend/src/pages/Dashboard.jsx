@@ -4,28 +4,11 @@ import { useAuth } from '../context/AuthContext';
 import { usersAPI } from '../services/api';
 import './Dashboard.css';
 
-interface DashboardData {
-  // Job Seeker fields
-  totalApplications?: number;
-  pendingApplications?: number;
-  shortlistedApplications?: number;
-  recentApplications?: any[];
-  
-  // Employer fields
-  totalJobs?: number;
-  activeJobs?: number;
-  recentJobs?: any[];
-  
-  // Admin fields
-  totalUsers?: number;
-  recentUsers?: any[];
-}
-
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
   const { user } = useAuth();
-  const [dashboardData, setDashboardData] = useState<DashboardData>({});
+  const [dashboardData, setDashboardData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -33,7 +16,7 @@ const Dashboard: React.FC = () => {
         setLoading(true);
         const response = await usersAPI.getDashboard();
         setDashboardData(response.data.dashboard);
-      } catch (err: any) {
+      } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch dashboard data');
       } finally {
         setLoading(false);
@@ -112,7 +95,7 @@ const Dashboard: React.FC = () => {
                   <div className="section-content">
                     {dashboardData.recentApplications && dashboardData.recentApplications.length > 0 ? (
                       <div className="applications-list">
-                        {dashboardData.recentApplications.map((application: any) => (
+                        {dashboardData.recentApplications.map((application) => (
                           <div key={application._id} className="application-item">
                             <div className="application-info">
                               <h4>{application.job?.title}</h4>
@@ -184,7 +167,7 @@ const Dashboard: React.FC = () => {
                   <div className="section-content">
                     {dashboardData.recentJobs && dashboardData.recentJobs.length > 0 ? (
                       <div className="jobs-list">
-                        {dashboardData.recentJobs.map((job: any) => (
+                        {dashboardData.recentJobs.map((job) => (
                           <div key={job._id} className="job-item">
                             <div className="job-info">
                               <h4>{job.title}</h4>
@@ -211,7 +194,7 @@ const Dashboard: React.FC = () => {
                   <div className="section-content">
                     {dashboardData.recentApplications && dashboardData.recentApplications.length > 0 ? (
                       <div className="applications-list">
-                        {dashboardData.recentApplications.map((application: any) => (
+                        {dashboardData.recentApplications.map((application) => (
                           <div key={application._id} className="application-item">
                             <div className="application-info">
                               <h4>{application.applicant?.name}</h4>
@@ -275,7 +258,7 @@ const Dashboard: React.FC = () => {
                   <div className="section-content">
                     {dashboardData.recentUsers && dashboardData.recentUsers.length > 0 ? (
                       <div className="users-list">
-                        {dashboardData.recentUsers.map((user: any) => (
+                        {dashboardData.recentUsers.map((user) => (
                           <div key={user._id} className="user-item">
                             <div className="user-info">
                               <h4>{user.name}</h4>

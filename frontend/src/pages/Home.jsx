@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Home.css';
 
-const Home: React.FC = () => {
+const Home = () => {
   const { isAuthenticated, user } = useAuth();
 
   return (

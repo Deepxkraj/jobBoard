@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { usersAPI } from '../services/api';
-import { User } from '../types';
 import './UserProfile.css';
 
-const UserProfile: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const UserProfile = () => {
+  const { id } = useParams();
   const { user: currentUser } = useAuth();
-  const [profileUser, setProfileUser] = useState<User | null>(null);
+  const [profileUser, setProfileUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -21,7 +20,7 @@ const UserProfile: React.FC = () => {
         setError(null);
         const response = await usersAPI.getUser(id);
         setProfileUser(response.data.user);
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error fetching user profile:', err);
         setError(err.response?.data?.message || 'Failed to fetch user profile');
       } finally {
@@ -32,7 +31,7 @@ const UserProfile: React.FC = () => {
     fetchUserProfile();
   }, [id]);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -196,7 +195,7 @@ const UserProfile: React.FC = () => {
                     <div className="info-item full-width">
                       <label>Skills</label>
                       <div className="skills-list">
-                        {profileUser.profile.professional.skills.map((skill: string, index: number) => (
+                        {profileUser.profile.professional.skills.map((skill, index) => (
                           <span key={index} className="skill-tag">
                             {skill}
                           </span>

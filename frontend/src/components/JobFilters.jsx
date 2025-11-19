@@ -1,19 +1,12 @@
 import React, { useState } from 'react';
-import { JobFilters } from '../types';
 import './JobFilters.css';
 
-interface JobFiltersProps {
-  filters: JobFilters;
-  onFilterChange: (filters: Partial<JobFilters>) => void;
-  onClearFilters: () => void;
-}
-
-const JobFiltersComponent: React.FC<JobFiltersProps> = ({
+const JobFiltersComponent = ({
   filters,
   onFilterChange,
   onClearFilters,
 }) => {
-  const [localFilters, setLocalFilters] = useState<Partial<JobFilters>>({
+  const [localFilters, setLocalFilters] = useState({
     search: filters.search || '',
     location: filters.location || '',
     type: filters.type || '',
@@ -23,7 +16,7 @@ const JobFiltersComponent: React.FC<JobFiltersProps> = ({
     maxSalary: filters.maxSalary || undefined,
   });
 
-  const handleInputChange = (field: keyof JobFilters, value: string | number) => {
+  const handleInputChange = (field, value) => {
     const newFilters = { ...localFilters, [field]: value };
     setLocalFilters(newFilters);
   };

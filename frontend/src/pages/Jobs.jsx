@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { jobsAPI } from '../services/api';
-import { Job, JobFilters } from '../types';
 import JobCard from '../components/JobCard';
 import JobFiltersComponent from '../components/JobFilters';
 import './Jobs.css';
 
-const Jobs: React.FC = () => {
-  const [jobs, setJobs] = useState<Job[]>([]);
+const Jobs = () => {
+  const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -16,7 +15,7 @@ const Jobs: React.FC = () => {
     hasNext: false,
     hasPrev: false,
   });
-  const [filters, setFilters] = useState<JobFilters>({
+  const [filters, setFilters] = useState({
     page: 1,
     limit: 12,
   });
@@ -28,7 +27,7 @@ const Jobs: React.FC = () => {
       const response = await jobsAPI.getJobs(filters);
       setJobs(response.data.jobs);
       setPagination(response.data.pagination);
-    } catch (err: any) {
+    } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch jobs');
     } finally {
       setLoading(false);
@@ -39,7 +38,7 @@ const Jobs: React.FC = () => {
     fetchJobs();
   }, [fetchJobs]);
 
-  const handleFilterChange = (newFilters: Partial<JobFilters>) => {
+  const handleFilterChange = (newFilters) => {
     setFilters(prev => ({
       ...prev,
       ...newFilters,
@@ -47,7 +46,7 @@ const Jobs: React.FC = () => {
     }));
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page) => {
     setFilters(prev => ({
       ...prev,
       page,

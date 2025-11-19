@@ -2,18 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { jobsAPI, applicationsAPI } from '../services/api';
-import { Job } from '../types';
 import './JobDetails.css';
 
-const JobDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const JobDetails = () => {
+  const { id } = useParams();
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [job, setJob] = useState<Job | null>(null);
+  const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
   const [applying, setApplying] = useState(false);
-  const [applicationError, setApplicationError] = useState<string | null>(null);
+  const [applicationError, setApplicationError] = useState(null);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [applicationData, setApplicationData] = useState({
     coverLetter: '',
@@ -29,7 +28,7 @@ const JobDetails: React.FC = () => {
         setError(null);
         const response = await jobsAPI.getJob(id);
         setJob(response.data.job);
-      } catch (err: any) {
+      } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch job details');
       } finally {
         setLoading(false);
@@ -47,7 +46,7 @@ const JobDetails: React.FC = () => {
     setShowApplicationForm(true);
   };
 
-  const handleApplicationSubmit = async (e: React.FormEvent) => {
+  const handleApplicationSubmit = async (e) => {
     e.preventDefault();
     if (!job || !user) return;
 
@@ -65,14 +64,14 @@ const JobDetails: React.FC = () => {
       setApplicationData({ coverLetter: '', resume: '' });
       // You could show a success message here
       navigate('/applications');
-    } catch (error: any) {
+    } catch (error) {
       setApplicationError(error.response?.data?.message || 'Failed to apply for job');
     } finally {
       setApplying(false);
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -80,8 +79,8 @@ const JobDetails: React.FC = () => {
     });
   };
 
-  const getJobTypeColor = (type: string) => {
-    const colors: { [key: string]: string } = {
+  const getJobTypeColor = (type) => {
+    const colors = {
       'full-time': '#28a745',
       'part-time': '#17a2b8',
       'contract': '#ffc107',
@@ -91,8 +90,8 @@ const JobDetails: React.FC = () => {
     return colors[type] || '#6c757d';
   };
 
-  const getExperienceColor = (experience: string) => {
-    const colors: { [key: string]: string } = {
+  const getExperienceColor = (experience) => {
+    const colors = {
       'entry': '#28a745',
       'mid': '#ffc107',
       'senior': '#dc3545',

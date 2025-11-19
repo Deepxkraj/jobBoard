@@ -1,36 +1,14 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { User } from '../types';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { authAPI } from '../services/api';
 
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
-
-interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, role?: string) => Promise<void>;
-  logout: () => void;
-  updateUser: (userData: Partial<User>) => Promise<void>;
-}
-
-type AuthAction =
-  | { type: 'AUTH_START' }
-  | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string } }
-  | { type: 'AUTH_FAILURE' }
-  | { type: 'LOGOUT' }
-  | { type: 'UPDATE_USER'; payload: User };
-
-const initialState: AuthState = {
+const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
   isLoading: true,
 };
 
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+const authReducer = (state, action) => {
   switch (action.type) {
     case 'AUTH_START':
       return {
@@ -71,7 +49,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -81,11 +59,7 @@ export const useAuth = () => {
   return context;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   // Check for existing token on app load
@@ -119,7 +93,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email, password) => {
     try {
       console.log('Attempting login for email:', email);
       dispatch({ type: 'AUTH_START' });
@@ -146,7 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       
       console.log('Login successful!');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Login error:', error);
       console.error('Error response:', error.response?.data);
       dispatch({ type: 'AUTH_FAILURE' });
@@ -154,7 +128,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const register = async (name: string, email: string, password: string, role = 'jobseeker') => {
+  const register = async (name, email, password, role = 'jobseeker') => {
     try {
       dispatch({ type: 'AUTH_START' });
       const response = await authAPI.register({ name, email, password, role });
@@ -175,7 +149,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           token,
         },
       });
-    } catch (error: any) {
+    } catch (error) {
       dispatch({ type: 'AUTH_FAILURE' });
       throw new Error(error.response?.data?.message || 'Registration failed');
     }
@@ -187,19 +161,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     dispatch({ type: 'LOGOUT' });
   };
 
-  const updateUser = async (userData: Partial<User>) => {
+  const updateUser = async (userData) => {
     try {
       const response = await authAPI.updateProfile(userData);
       dispatch({
         type: 'UPDATE_USER',
         payload: response.data.user,
       });
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(error.response?.data?.message || 'Profile update failed');
     }
   };
 
-  const value: AuthContextType = {
+  const value = {
     ...state,
     login,
     register,

@@ -3,39 +3,17 @@ import { Link } from 'react-router-dom';
 import { usersAPI } from '../services/api';
 import './Dashboard.css';
 
-interface AdminUserItem {
-  _id: string;
-  name: string;
-  email: string;
-  role: 'jobseeker' | 'employer' | 'admin';
-  isActive: boolean;
-  createdAt: string;
-}
-
-interface AdminUsersResponse {
-  success: boolean;
-  users: AdminUserItem[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalUsers?: number;
-    totalItems?: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-}
-
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 
-const AdminUsers: React.FC = () => {
-  const [users, setUsers] = useState<AdminUserItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState<number>(1);
-  const [limit, setLimit] = useState<number>(10);
-  const [roleFilter, setRoleFilter] = useState<string>('all');
-  const [search, setSearch] = useState<string>('');
-  const [pagination, setPagination] = useState<AdminUsersResponse['pagination'] | null>(null);
+const AdminUsers = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [pagination, setPagination] = useState(null);
 
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
@@ -53,8 +31,8 @@ const AdminUsers: React.FC = () => {
         setError(null);
         const resp = await usersAPI.getUsers({ page, limit });
         setUsers(resp.data.users);
-        setPagination(resp.data.pagination as any);
-      } catch (e: any) {
+        setPagination(resp.data.pagination);
+      } catch (e) {
         setError(e.response?.data?.message || 'Failed to load users');
       } finally {
         setLoading(false);
@@ -63,11 +41,11 @@ const AdminUsers: React.FC = () => {
     fetchUsers();
   }, [page, limit]);
 
-  const toggleUserStatus = async (userId: string, isActive: boolean) => {
+  const toggleUserStatus = async (userId, isActive) => {
     try {
       await usersAPI.updateUserStatus(userId, { isActive: !isActive });
       setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, isActive: !isActive } : u)));
-    } catch (e: any) {
+    } catch (e) {
       setError(e.response?.data?.message || 'Failed to update user status');
     }
   };

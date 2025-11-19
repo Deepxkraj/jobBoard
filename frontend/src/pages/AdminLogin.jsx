@@ -3,16 +3,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
-interface AdminLoginProps {
-  role: 'admin';
-}
-
-const AdminLogin: React.FC<AdminLoginProps> = ({ role }) => {
+const AdminLogin = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { login, isAuthenticated } = useAuth();
@@ -27,7 +23,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ role }) => {
     }
   }, [isAuthenticated, navigate, from]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -38,7 +34,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ role }) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrors([]);
@@ -49,7 +45,7 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ role }) => {
       setTimeout(() => {
         navigate(from, { replace: true });
       }, 100);
-    } catch (error: any) {
+    } catch (error) {
       setErrors([error.message]);
     } finally {
       setIsLoading(false);

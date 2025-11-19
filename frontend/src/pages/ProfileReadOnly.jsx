@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { usersAPI } from '../services/api';
-import { User } from '../types';
 import './Profile.css';
 
-const ProfileReadOnly: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [profileUser, setProfileUser] = useState<User | null>(null);
+const ProfileReadOnly = () => {
+  const { id } = useParams();
+  const [profileUser, setProfileUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'personal' | 'professional' | 'company'>('personal');
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('personal');
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         setLoading(true);
-        const res = await usersAPI.getUser(id as string);
+        const res = await usersAPI.getUser(id);
         setProfileUser(res.data.user);
-      } catch (e: any) {
+      } catch (e) {
         setError(e.response?.data?.message || 'Failed to load profile');
       } finally {
         setLoading(false);

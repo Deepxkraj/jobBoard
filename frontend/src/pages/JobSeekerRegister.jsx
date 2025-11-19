@@ -1,71 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
-const Register: React.FC = () => {
+const JobSeekerRegister = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'jobseeker',
   });
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const from = location.state?.from?.pathname || '/dashboard';
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(from, { replace: true });
+      navigate('/dashboard', { replace: true });
     }
-  }, [isAuthenticated, navigate, from]);
+  }, [isAuthenticated, navigate]);
 
-  // Check for role in URL params
-  useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const role = urlParams.get('role');
-    if (role && (role === 'jobseeker' || role === 'employer' || role === 'admin')) {
-      setFormData(prev => ({ ...prev, role }));
-    }
-  }, [location.search]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    // Clear errors when user starts typing
     if (errors.length > 0) {
       setErrors([]);
     }
   };
 
   const validateForm = () => {
-    const newErrors: string[] = [];
+    const newErrors = [];
+
+    if (!formData.name.trim()) {
+      newErrors.push('Name is required');
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.push('Email is required');
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.push('Please enter a valid email');
+    }
+
+    if (!formData.password) {
+      newErrors.push('Password is required');
+    } else if (formData.password.length < 6) {
+      newErrors.push('Password must be at least 6 characters');
+    }
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.push('Passwords do not match');
     }
 
-    if (formData.password.length < 6) {
-      newErrors.push('Password must be at least 6 characters long');
-    }
-
-    if (formData.name.length < 2) {
-      newErrors.push('Name must be at least 2 characters long');
-    }
-
     return newErrors;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const validationErrors = validateForm();
@@ -78,9 +72,9 @@ const Register: React.FC = () => {
     setErrors([]);
 
     try {
-      await register(formData.name, formData.email, formData.password, formData.role);
-      navigate(from, { replace: true });
-    } catch (error: any) {
+      await register(formData.name, formData.email, formData.password, 'jobseeker');
+      navigate('/dashboard', { replace: true });
+    } catch (error) {
       setErrors([error.message]);
     } finally {
       setIsLoading(false);
@@ -91,8 +85,9 @@ const Register: React.FC = () => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
+          <div className="role-badge jobseeker">Job Seeker</div>
           <h1>Join JobConnect</h1>
-          <p>Create your account to get started</p>
+          <p>Create your account to start finding opportunities</p>
         </div>
 
         {errors.length > 0 && (
@@ -134,22 +129,6 @@ const Register: React.FC = () => {
             />
           </div>
 
-            <div className="form-group">
-              <label htmlFor="role">I am a</label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                disabled={isLoading}
-                className="form-select"
-              >
-                <option value="jobseeker">Job Seeker</option>
-                <option value="employer">Employer</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -180,24 +159,28 @@ const Register: React.FC = () => {
 
           <button
             type="submit"
-            className="auth-button"
+            className="auth-button jobseeker"
             disabled={isLoading}
           >
-            {isLoading ? 'Creating Account...' : 'Create Account'}
+            {isLoading ? 'Creating Account...' : 'Sign Up as Job Seeker'}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>
             Already have an account?{' '}
-            <Link to="/login" className="auth-link">
-              Sign in here
+            <Link to="/login/jobseeker" className="auth-link">
+              Sign in as Job Seeker
             </Link>
           </p>
+          <div className="role-switch">
+            <p>Are you an employer? <Link to="/register/employer">Sign up as Employer</Link></p>
+            <p>Are you an admin? <Link to="/login/admin">Sign in as Admin</Link></p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default Register;
+export default JobSeekerRegister;

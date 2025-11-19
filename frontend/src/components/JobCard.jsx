@@ -1,14 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Job } from '../types';
 import './JobCard.css';
 
-interface JobCardProps {
-  job: Job;
-}
-
-const JobCard: React.FC<JobCardProps> = ({ job }) => {
-  const formatDate = (dateString: string) => {
+const JobCard = ({ job }) => {
+  const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -16,8 +11,8 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
     });
   };
 
-  const getJobTypeColor = (type: string) => {
-    const colors: { [key: string]: string } = {
+  const getJobTypeColor = (type) => {
+    const colors = {
       'full-time': '#28a745',
       'part-time': '#17a2b8',
       'contract': '#ffc107',
@@ -27,8 +22,8 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
     return colors[type] || '#6c757d';
   };
 
-  const getExperienceColor = (experience: string) => {
-    const colors: { [key: string]: string } = {
+  const getExperienceColor = (experience) => {
+    const colors = {
       'entry': '#28a745',
       'mid': '#ffc107',
       'senior': '#dc3545',

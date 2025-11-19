@@ -1,74 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
-interface EmployerRegisterProps {
-  role: 'employer';
-}
-
-const EmployerRegister: React.FC<EmployerRegisterProps> = ({ role }) => {
+const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    companyName: '',
+    role: 'jobseeker',
   });
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || '/dashboard';
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+      navigate(from, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, from]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Check for role in URL params
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const role = urlParams.get('role');
+    if (role && (role === 'jobseeker' || role === 'employer' || role === 'admin')) {
+      setFormData(prev => ({ ...prev, role }));
+    }
+  }, [location.search]);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+    // Clear errors when user starts typing
     if (errors.length > 0) {
       setErrors([]);
     }
   };
 
   const validateForm = () => {
-    const newErrors: string[] = [];
-
-    if (!formData.name.trim()) {
-      newErrors.push('Name is required');
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.push('Email is required');
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.push('Please enter a valid email');
-    }
-
-    if (!formData.companyName.trim()) {
-      newErrors.push('Company name is required');
-    }
-
-    if (!formData.password) {
-      newErrors.push('Password is required');
-    } else if (formData.password.length < 6) {
-      newErrors.push('Password must be at least 6 characters');
-    }
+    const newErrors = [];
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.push('Passwords do not match');
     }
 
+    if (formData.password.length < 6) {
+      newErrors.push('Password must be at least 6 characters long');
+    }
+
+    if (formData.name.length < 2) {
+      newErrors.push('Name must be at least 2 characters long');
+    }
+
     return newErrors;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const validationErrors = validateForm();
@@ -81,9 +78,9 @@ const EmployerRegister: React.FC<EmployerRegisterProps> = ({ role }) => {
     setErrors([]);
 
     try {
-      await register(formData.name, formData.email, formData.password, 'employer');
-      navigate('/dashboard', { replace: true });
-    } catch (error: any) {
+      await register(formData.name, formData.email, formData.password, formData.role);
+      navigate(from, { replace: true });
+    } catch (error) {
       setErrors([error.message]);
     } finally {
       setIsLoading(false);
@@ -94,9 +91,8 @@ const EmployerRegister: React.FC<EmployerRegisterProps> = ({ role }) => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="role-badge employer">Employer</div>
           <h1>Join JobConnect</h1>
-          <p>Create your employer account to start posting jobs</p>
+          <p>Create your account to get started</p>
         </div>
 
         {errors.length > 0 && (
@@ -138,19 +134,21 @@ const EmployerRegister: React.FC<EmployerRegisterProps> = ({ role }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="companyName">Company Name</label>
-            <input
-              type="text"
-              id="companyName"
-              name="companyName"
-              value={formData.companyName}
-              onChange={handleChange}
-              required
-              placeholder="Enter your company name"
-              disabled={isLoading}
-            />
-          </div>
+            <div className="form-group">
+              <label htmlFor="role">I am a</label>
+              <select
+                id="role"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                disabled={isLoading}
+                className="form-select"
+              >
+                <option value="jobseeker">Job Seeker</option>
+                <option value="employer">Employer</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
 
           <div className="form-group">
             <label htmlFor="password">Password</label>
@@ -182,28 +180,24 @@ const EmployerRegister: React.FC<EmployerRegisterProps> = ({ role }) => {
 
           <button
             type="submit"
-            className="auth-button employer"
+            className="auth-button"
             disabled={isLoading}
           >
-            {isLoading ? 'Creating Account...' : 'Sign Up as Employer'}
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 
         <div className="auth-footer">
           <p>
             Already have an account?{' '}
-            <Link to="/login/employer" className="auth-link">
-              Sign in as Employer
+            <Link to="/login" className="auth-link">
+              Sign in here
             </Link>
           </p>
-          <div className="role-switch">
-            <p>Are you a job seeker? <Link to="/register/jobseeker">Sign up as Job Seeker</Link></p>
-            <p>Are you an admin? <Link to="/login/admin">Sign in as Admin</Link></p>
-          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default EmployerRegister;
+export default Register;

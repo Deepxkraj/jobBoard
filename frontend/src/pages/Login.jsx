@@ -3,12 +3,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
-const Login: React.FC = () => {
+const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { login, isAuthenticated } = useAuth();
@@ -23,7 +23,7 @@ const Login: React.FC = () => {
     }
   }, [isAuthenticated, navigate, from]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -35,7 +35,7 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrors([]);
@@ -43,7 +43,7 @@ const Login: React.FC = () => {
     try {
       await login(formData.email, formData.password);
       navigate(from, { replace: true });
-    } catch (error: any) {
+    } catch (error) {
       setErrors([error.message]);
     } finally {
       setIsLoading(false);

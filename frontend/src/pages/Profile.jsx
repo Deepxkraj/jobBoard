@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './Profile.css';
 
-const Profile: React.FC = () => {
+const Profile = () => {
   const { user, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [errors, setErrors] = useState([]);
+  const [success, setSuccess] = useState(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -15,9 +15,9 @@ const Profile: React.FC = () => {
       phone: '',
       location: '',
       bio: '',
-      skills: [] as string[],
-      experience: [] as any[],
-      education: [] as any[]
+      skills: [],
+      experience: [],
+      education: []
     },
     company: {
       name: '',
@@ -72,8 +72,8 @@ const Profile: React.FC = () => {
       });
 
       // Prefill single-entry editors from first existing items
-      const exp0: any = user.profile?.experience?.[0] || { company: '', position: '', description: '' };
-      const edu0: any = user.profile?.education?.[0] || { institution: '', degree: '', field: '', description: '' };
+      const exp0 = user.profile?.experience?.[0] || { company: '', position: '', description: '' };
+      const edu0 = user.profile?.education?.[0] || { institution: '', degree: '', field: '', description: '' };
 
       setExperience({
         company: exp0.company || '',
@@ -90,7 +90,7 @@ const Profile: React.FC = () => {
     }
   }, [user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name.startsWith('profile.')) {
@@ -132,7 +132,7 @@ const Profile: React.FC = () => {
     }
   };
 
-  const removeSkill = (skillToRemove: string) => {
+  const removeSkill = (skillToRemove) => {
     setFormData(prev => ({
       ...prev,
       profile: {
@@ -142,7 +142,7 @@ const Profile: React.FC = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrors([]);
@@ -162,11 +162,11 @@ const Profile: React.FC = () => {
             ? [{ ...education }]
             : []
         }
-      } as any;
+      };
 
       await updateUser(payload);
       setSuccess('Profile updated successfully!');
-    } catch (error: any) {
+    } catch (error) {
       setErrors([error.message || 'Failed to update profile']);
     } finally {
       setLoading(false);

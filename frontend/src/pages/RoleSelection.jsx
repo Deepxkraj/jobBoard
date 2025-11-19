@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Auth.css';
 
-const RoleSelection: React.FC = () => {
+const RoleSelection = () => {
   return (
     <div className="auth-container">
       <div className="role-selection-card">
