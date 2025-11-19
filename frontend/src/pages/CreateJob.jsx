@@ -129,8 +129,7 @@ const CreateJob = () => {
       if (deadlineDate <= now) {
         newErrors.push('Application deadline must be in the future');
       }
-      
-      // Check if the date is valid
+
       if (isNaN(deadlineDate.getTime())) {
         newErrors.push('Please enter a valid application deadline');
       }
@@ -159,7 +158,7 @@ const CreateJob = () => {
           min: formData.salary.min ? parseInt(formData.salary.min) : undefined,
           max: formData.salary.max ? parseInt(formData.salary.max) : undefined
         },
-        // Convert datetime-local to ISO string
+        
         applicationDeadline: new Date(formData.applicationDeadline).toISOString()
       };
 

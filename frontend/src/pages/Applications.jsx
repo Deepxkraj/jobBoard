@@ -98,7 +98,6 @@ const Applications = () => {
     });
   };
 
-  // Helper function to calculate days since applied
   const getDaysSinceApplied = (appliedAt) => {
     return Math.floor((new Date().getTime() - new Date(appliedAt).getTime()) / (1000 * 60 * 60 * 24));
   };

@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 require('dotenv').config();
 
-// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/jobconnect', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -10,21 +9,19 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/jobconnec
 .then(() => console.log('MongoDB connected successfully'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-// Create admin user
 const createAdminUser = async () => {
   try {
-    // Check if admin already exists
+    
     const existingAdmin = await User.findOne({ role: 'admin' });
     if (existingAdmin) {
       console.log('Admin user already exists:', existingAdmin.email);
       return;
     }
 
-    // Create admin user
     const adminUser = await User.create({
       name: 'System Administrator',
       email: 'admin@jobconnect.com',
-      password: 'admin123456', // Change this in production!
+      password: 'admin123456', 
       role: 'admin',
       isActive: true
     });
@@ -42,5 +39,4 @@ const createAdminUser = async () => {
   }
 };
 
-// Run the script
 createAdminUser();

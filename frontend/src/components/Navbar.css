@@ -167,7 +167,7 @@
   margin-top: 10px;
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .navbar-menu {
     display: none;

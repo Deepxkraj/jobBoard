@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-// Create axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -10,7 +9,6 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -24,7 +22,6 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle auth errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -37,7 +34,6 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API
 export const authAPI = {
   register: (userData) =>
     api.post('/auth/register', userData),
@@ -52,7 +48,6 @@ export const authAPI = {
     api.put('/auth/profile', userData),
 };
 
-// Jobs API
 export const jobsAPI = {
   getJobs: (filters) =>
     api.get('/jobs', { params: filters }),
@@ -73,7 +68,6 @@ export const jobsAPI = {
     api.get(`/jobs/company/${companyId}`),
 };
 
-// Applications API
 export const applicationsAPI = {
   applyForJob: (applicationData) =>
     api.post('/applications', applicationData),
@@ -94,7 +88,6 @@ export const applicationsAPI = {
     api.delete(`/applications/${id}`),
 };
 
-// Users API
 export const usersAPI = {
   getProfile: () =>
     api.get('/users/profile'),

@@ -1,21 +1,18 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Protect routes - verify JWT token
 const protect = async (req, res, next) => {
   let token;
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
-      // Get token from header
+      
       token = req.headers.authorization.split(' ')[1];
       console.log('Token received:', token ? 'Present' : 'Missing');
 
-      // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       console.log('Token decoded successfully for user ID:', decoded.id);
 
-      // Get user from token
       req.user = await User.findById(decoded.id).select('-password');
 
       if (!req.user) {
@@ -42,7 +39,6 @@ const protect = async (req, res, next) => {
   }
 };
 
-// Grant access to specific roles
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
@@ -54,7 +50,6 @@ const authorize = (...roles) => {
   };
 };
 
-// Check if user owns the resource
 const checkOwnership = (resourceUserId) => {
   return (req, res, next) => {
     if (req.user.role === 'admin') {

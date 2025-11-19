@@ -7,9 +7,6 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// @route   GET /api/users/profile
-// @desc    Get user profile
-// @access  Private
 router.get('/profile', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -23,9 +20,6 @@ router.get('/profile', protect, async (req, res) => {
   }
 });
 
-// @route   PUT /api/users/profile
-// @desc    Update user profile
-// @access  Private
 router.put('/profile', protect, [
   body('name').optional().trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters'),
   body('email').optional().isEmail().normalizeEmail().withMessage('Please provide a valid email'),
@@ -48,7 +42,6 @@ router.put('/profile', protect, [
 
     const updateData = { ...req.body };
 
-    // Remove sensitive fields
     delete updateData.password;
     delete updateData.role;
     delete updateData.isActive;
@@ -69,15 +62,12 @@ router.put('/profile', protect, [
   }
 });
 
-// @route   GET /api/users/dashboard
-// @desc    Get user dashboard data
-// @access  Private
 router.get('/dashboard', protect, async (req, res) => {
   try {
     let dashboardData = {};
 
     if (req.user.role === 'jobseeker') {
-      // Job seeker dashboard
+      
       const totalApplications = await Application.countDocuments({ applicant: req.user._id });
       const pendingApplications = await Application.countDocuments({ 
         applicant: req.user._id, 
@@ -99,7 +89,7 @@ router.get('/dashboard', protect, async (req, res) => {
         recentApplications
       };
     } else if (req.user.role === 'employer') {
-      // Employer dashboard
+      
       const totalJobs = await Job.countDocuments({ company: req.user._id });
       const activeJobs = await Job.countDocuments({ 
         company: req.user._id, 
@@ -127,7 +117,7 @@ router.get('/dashboard', protect, async (req, res) => {
         recentApplications
       };
     } else if (req.user.role === 'admin') {
-      // Admin dashboard
+      
       const totalUsers = await User.countDocuments();
       const totalJobs = await Job.countDocuments();
       const totalApplications = await Application.countDocuments();
@@ -159,9 +149,6 @@ router.get('/dashboard', protect, async (req, res) => {
   }
 });
 
-// @route   GET /api/users/:id
-// @desc    Get user by ID (public profile)
-// @access  Public
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
@@ -171,7 +158,6 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // If it's an employer, also get their jobs
     let jobs = [];
     if (user.role === 'employer') {
       jobs = await Job.find({ 
@@ -193,9 +179,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// @route   GET /api/users
-// @desc    Get all users (admin only)
-// @access  Private (Admin only)
 router.get('/', protect, authorize('admin'), async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -227,9 +210,6 @@ router.get('/', protect, authorize('admin'), async (req, res) => {
   }
 });
 
-// @route   PUT /api/users/:id/status
-// @desc    Update user status (admin only)
-// @access  Private (Admin only)
 router.put('/:id/status', protect, authorize('admin'), [
   body('isActive').isBoolean().withMessage('isActive must be a boolean')
 ], async (req, res) => {

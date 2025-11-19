@@ -2,7 +2,7 @@
   min-height: 100vh;
 }
 
-/* Hero Section */
+
 .hero {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -121,7 +121,7 @@
   font-weight: 600;
 }
 
-/* Features Section */
+
 .features {
   padding: 100px 0;
   background: #f8f9fa;
@@ -178,7 +178,7 @@
   line-height: 1.6;
 }
 
-/* Stats Section */
+
 .stats {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -211,7 +211,7 @@
   opacity: 0.9;
 }
 
-/* CTA Section */
+
 .cta {
   padding: 100px 0;
   background: #2c3e50;
@@ -238,7 +238,7 @@
   flex-wrap: wrap;
 }
 
-/* Buttons */
+
 .btn {
   display: inline-block;
   padding: 15px 30px;
@@ -291,7 +291,7 @@
   font-size: 1.1rem;
 }
 
-/* Animations */
+
 @keyframes slideInLeft {
   from {
     opacity: 0;
@@ -334,7 +334,7 @@
   }
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .hero-container {
     grid-template-columns: 1fr;

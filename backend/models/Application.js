@@ -24,8 +24,8 @@ const applicationSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  additionalDocuments: [String], // URLs to additional documents
-  notes: String, // Internal notes for employer
+  additionalDocuments: [String], 
+  notes: String, 
   appliedAt: {
     type: Date,
     default: Date.now
@@ -39,10 +39,8 @@ const applicationSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Ensure one application per job per applicant
 applicationSchema.index({ job: 1, applicant: 1 }, { unique: true });
 
-// Virtual for application age
 applicationSchema.virtual('daysSinceApplied').get(function() {
   const now = new Date();
   const applied = new Date(this.appliedAt);
@@ -51,7 +49,6 @@ applicationSchema.virtual('daysSinceApplied').get(function() {
   return diffDays;
 });
 
-// Ensure virtual fields are serialized
 applicationSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model('Application', applicationSchema);

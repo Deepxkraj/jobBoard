@@ -8,7 +8,7 @@ const Home = () => {
 
   return (
     <div className="home">
-      {/* Hero Section */}
+      {}
       <section className="hero">
         <div className="hero-container">
           <div className="hero-content">
@@ -63,7 +63,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Section */}
+      {}
       <section className="features">
         <div className="container">
           <h2 className="section-title">Why Choose JobConnect?</h2>

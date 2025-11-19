@@ -90,7 +90,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {}
       <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
         <Link to="/" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
           Home

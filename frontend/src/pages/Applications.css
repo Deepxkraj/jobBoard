@@ -319,7 +319,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .applications-container {
     padding: 20px 0;
@@ -407,7 +407,7 @@
   }
 }
 
-/* Status Action Buttons */
+
 .status-actions {
   display: flex;
   gap: 8px;
@@ -454,7 +454,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Applicant Info */
+
 .applicant-info {
   margin-top: 10px;
   padding: 10px;
@@ -475,7 +475,7 @@
   font-size: 0.9rem;
 }
 
-/* Responsive adjustments for status actions */
+
 @media (max-width: 768px) {
   .status-actions {
     flex-direction: column;

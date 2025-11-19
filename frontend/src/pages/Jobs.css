@@ -189,7 +189,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Buttons */
+
 .btn {
   display: inline-block;
   padding: 10px 20px;
@@ -236,7 +236,7 @@
   transform: none;
 }
 
-/* Responsive Design */
+
 @media (max-width: 1024px) {
   .jobs-layout {
     grid-template-columns: 1fr;

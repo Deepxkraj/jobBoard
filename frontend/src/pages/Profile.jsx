@@ -31,7 +31,6 @@ const Profile = () => {
 
   const [skillInput, setSkillInput] = useState('');
 
-  // Single-entry editors for experience/education
   const [noExperience, setNoExperience] = useState(false);
   const [experience, setExperience] = useState({
     company: '',
@@ -71,7 +70,6 @@ const Profile = () => {
         }
       });
 
-      // Prefill single-entry editors from first existing items
       const exp0 = user.profile?.experience?.[0] || { company: '', position: '', description: '' };
       const edu0 = user.profile?.education?.[0] || { institution: '', degree: '', field: '', description: '' };
 

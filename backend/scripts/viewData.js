@@ -14,8 +14,7 @@ async function viewData() {
     console.log('✅ Connected to MongoDB Atlas!\n');
     
     const db = mongoose.connection.db;
-    
-    // Get all collections
+
     const collections = await db.listCollections().toArray();
     
     console.log('='.repeat(60));
@@ -33,13 +32,13 @@ async function viewData() {
       console.log(`   Documents: ${count}`);
       
       if (count > 0) {
-        // Show first few documents as sample
+        
         const samples = await collection.find({}).limit(3).toArray();
         console.log(`\n   Sample documents (showing first ${Math.min(3, count)}):`);
         
         samples.forEach((doc, index) => {
           console.log(`\n   [${index + 1}]`);
-          // Format the document nicely
+          
           const formatted = JSON.stringify(doc, null, 2)
             .split('\n')
             .map(line => '   ' + line)
@@ -53,13 +52,11 @@ async function viewData() {
       }
       console.log('');
     }
-    
-    // Show specific collection details
+
     console.log('='.repeat(60));
     console.log('📋 COLLECTION DETAILS');
     console.log('='.repeat(60));
-    
-    // Users collection
+
     if (collections.find(c => c.name === 'users')) {
       const users = db.collection('users');
       const userCount = await users.countDocuments();
@@ -75,8 +72,7 @@ async function viewData() {
       console.log(`   Employers: ${employers}`);
       console.log(`   Job Seekers: ${jobSeekers}`);
     }
-    
-    // Jobs collection
+
     if (collections.find(c => c.name === 'jobs')) {
       const jobs = db.collection('jobs');
       const jobCount = await jobs.countDocuments();
@@ -84,8 +80,7 @@ async function viewData() {
       console.log('\n💼 JOBS:');
       console.log(`   Total: ${jobCount}`);
     }
-    
-    // Applications collection
+
     if (collections.find(c => c.name === 'applications')) {
       const applications = db.collection('applications');
       const appCount = await applications.countDocuments();

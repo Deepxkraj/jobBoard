@@ -42,7 +42,7 @@ const Jobs = () => {
     setFilters(prev => ({
       ...prev,
       ...newFilters,
-      page: 1, // Reset to first page when filters change
+      page: 1, 
     }));
   };
 

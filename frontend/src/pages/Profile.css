@@ -298,7 +298,7 @@
   font-weight: 500;
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .profile-container {
     padding: 20px 0;
@@ -371,7 +371,7 @@
   }
 }
 
-/* Animation for form sections */
+
 .form-section {
   animation: fadeInUp 0.6s ease-out;
 }

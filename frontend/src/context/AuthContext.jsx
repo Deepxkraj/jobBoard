@@ -62,7 +62,6 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Check for existing token on app load
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
@@ -70,7 +69,7 @@ export const AuthProvider = ({ children }) => {
 
       if (token && userData) {
         try {
-          // Verify token by fetching profile
+          
           const response = await authAPI.getProfile();
           dispatch({
             type: 'AUTH_SUCCESS',
@@ -80,7 +79,7 @@ export const AuthProvider = ({ children }) => {
             },
           });
         } catch (error) {
-          // Token is invalid, clear storage
+          
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           dispatch({ type: 'AUTH_FAILURE' });
@@ -101,13 +100,12 @@ export const AuthProvider = ({ children }) => {
       
       console.log('Login response received:', response.data);
       const { token, user } = response.data;
-      
-      // Store token and user data
+
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       
       console.log('Fetching user profile...');
-      // Fetch full user profile
+      
       const profileResponse = await authAPI.getProfile();
       console.log('Profile response received:', profileResponse.data);
       
@@ -134,12 +132,10 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.register({ name, email, password, role });
       
       const { token, user } = response.data;
-      
-      // Store token and user data
+
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
-      
-      // Fetch full user profile
+
       const profileResponse = await authAPI.getProfile();
       
       dispatch({

@@ -6,16 +6,12 @@ const { protect } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Generate JWT Token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || '7d',
   });
 };
 
-// @route   POST /api/auth/register
-// @desc    Register user
-// @access  Public
 router.post('/register', [
   body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters'),
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
@@ -33,20 +29,17 @@ router.post('/register', [
 
     const { name, email, password, role = 'jobseeker' } = req.body;
 
-    // Prevent admin registration through this route
     if (role === 'admin') {
       return res.status(403).json({ 
         message: 'Admin accounts cannot be created through registration. Please contact system administrator.' 
       });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Create user
     const user = await User.create({
       name,
       email,
@@ -54,7 +47,6 @@ router.post('/register', [
       role
     });
 
-    // Generate token
     const token = generateToken(user._id);
 
     res.status(201).json({
@@ -73,9 +65,6 @@ router.post('/register', [
   }
 });
 
-// @route   POST /api/auth/login
-// @desc    Login user
-// @access  Public
 router.post('/login', [
   body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
   body('password').notEmpty().withMessage('Password is required')
@@ -93,20 +82,17 @@ router.post('/login', [
     const { email, password } = req.body;
     console.log('Login attempt for email:', email);
 
-    // Check if user exists
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       console.log('User not found for email:', email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Check if account is active
     if (!user.isActive) {
       console.log('Account deactivated for email:', email);
       return res.status(401).json({ message: 'Account is deactivated' });
     }
 
-    // Check password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       console.log('Password mismatch for email:', email);
@@ -115,7 +101,6 @@ router.post('/login', [
 
     console.log('Login successful for user:', user.email);
 
-    // Generate token
     const token = generateToken(user._id);
 
     res.json({
@@ -134,9 +119,6 @@ router.post('/login', [
   }
 });
 
-// @route   GET /api/auth/profile
-// @desc    Get current user profile
-// @access  Private
 router.get('/profile', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -150,9 +132,6 @@ router.get('/profile', protect, async (req, res) => {
   }
 });
 
-// @route   PUT /api/auth/profile
-// @desc    Update user profile
-// @access  Private
 router.put('/profile', protect, [
   body('name').optional().trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters'),
   body('email').optional().isEmail().normalizeEmail().withMessage('Please provide a valid email')
@@ -167,8 +146,7 @@ router.put('/profile', protect, [
     }
 
     const updateData = { ...req.body };
-    
-    // Remove password from update data if present
+
     delete updateData.password;
 
     const user = await User.findByIdAndUpdate(

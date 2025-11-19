@@ -69,8 +69,7 @@ const EmployerApplications = () => {
         status: newStatus,
         notes: `Status updated to ${newStatus}`
       });
-      
-      // Refresh applications
+
       await fetchApplications();
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to update application status');

@@ -70,12 +70,12 @@ const AppRoutes = () => {
         <Navbar />
         <main className="main-content">
           <Routes>
-            {/* Public Routes */}
+            {}
             <Route path="/" element={<Home />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/jobs/:id" element={<JobDetails />} />
             
-            {/* Role Selection */}
+            {}
             <Route 
               path="/auth" 
               element={

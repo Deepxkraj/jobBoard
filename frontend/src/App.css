@@ -1,4 +1,4 @@
-/* Global Styles */
+
 * {
   box-sizing: border-box;
 }
@@ -26,7 +26,7 @@ body {
   padding-top: 0;
 }
 
-/* Loading Styles */
+
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -51,7 +51,7 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Utility Classes */
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -91,7 +91,7 @@ body {
 .p-4 { padding: 1.5rem; }
 .p-5 { padding: 3rem; }
 
-/* Button Styles */
+
 .btn {
   display: inline-block;
   padding: 10px 20px;
@@ -181,7 +181,7 @@ body {
   font-size: 1.125rem;
 }
 
-/* Form Styles */
+
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -220,7 +220,7 @@ body {
   opacity: 1;
 }
 
-/* Alert Styles */
+
 .alert {
   position: relative;
   padding: 0.75rem 1.25rem;
@@ -253,7 +253,7 @@ body {
   border-color: #bee5eb;
 }
 
-/* Card Styles */
+
 .card {
   position: relative;
   display: flex;
@@ -284,7 +284,7 @@ body {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .container {
     padding: 0 15px;
@@ -300,7 +300,7 @@ body {
   }
 }
 
-/* Animation Classes */
+
 .fade-in {
   animation: fadeIn 0.5s ease-in;
 }

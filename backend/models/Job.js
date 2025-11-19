@@ -89,7 +89,6 @@ const jobSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for search functionality
 jobSchema.index({ 
   title: 'text', 
   description: 'text', 
@@ -98,7 +97,6 @@ jobSchema.index({
   category: 'text'
 });
 
-// Virtual for salary range display
 jobSchema.virtual('salaryRange').get(function() {
   if (this.salary.min && this.salary.max) {
     return `${this.salary.currency} ${this.salary.min.toLocaleString()} - ${this.salary.max.toLocaleString()} per ${this.salary.period}`;
@@ -110,7 +108,6 @@ jobSchema.virtual('salaryRange').get(function() {
   return 'Salary not specified';
 });
 
-// Ensure virtual fields are serialized
 jobSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model('Job', jobSchema);

@@ -187,12 +187,12 @@
   text-decoration: underline;
 }
 
-/* Role Selection Styling */
+
 .form-group .form-select option {
   padding: 10px;
 }
 
-/* Loading State */
+
 .auth-button:disabled {
   position: relative;
 }
@@ -227,7 +227,7 @@
   }
 }
 
-/* Responsive Design */
+
 @media (max-width: 480px) {
   .auth-container {
     padding: 10px;
@@ -257,7 +257,7 @@
   }
 }
 
-/* Role-based Authentication Styles */
+
 .role-badge {
   display: inline-block;
   padding: 8px 16px;
@@ -349,7 +349,7 @@
   box-shadow: 0 20px 60px rgba(255, 152, 0, 0.1);
 }
 
-/* Role Selection Page */
+
 .role-selection-card {
   background: white;
   border-radius: 20px;
@@ -363,12 +363,12 @@
   overflow: hidden;
 }
 
-/* Reset any potential overlapping issues */
+
 .role-selection-card * {
   box-sizing: border-box;
 }
 
-/* Prevent overlapping and ensure proper spacing */
+
 .role-options {
   display: flex;
   flex-wrap: wrap;
@@ -496,7 +496,7 @@
   color: white;
 }
 
-/* Responsive Design for Role Selection */
+
 @media (max-width: 1024px) {
   .role-options {
     gap: 25px;
@@ -559,7 +559,7 @@
   }
 }
 
-/* Dark mode support */
+
 @media (prefers-color-scheme: dark) {
   .auth-card {
     background: #2c3e50;

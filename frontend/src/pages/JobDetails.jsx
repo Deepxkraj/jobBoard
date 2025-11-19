@@ -62,7 +62,7 @@ const JobDetails = () => {
       
       setShowApplicationForm(false);
       setApplicationData({ coverLetter: '', resume: '' });
-      // You could show a success message here
+      
       navigate('/applications');
     } catch (error) {
       setApplicationError(error.response?.data?.message || 'Failed to apply for job');

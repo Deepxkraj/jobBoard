@@ -6,9 +6,6 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// @route   POST /api/applications
-// @desc    Apply for a job
-// @access  Private (Job seekers only)
 router.post('/', protect, authorize('jobseeker'), [
   body('jobId').isMongoId().withMessage('Valid job ID is required'),
   body('coverLetter').optional().trim().isLength({ max: 1000 }).withMessage('Cover letter cannot exceed 1000 characters'),
@@ -25,7 +22,6 @@ router.post('/', protect, authorize('jobseeker'), [
 
     const { jobId, coverLetter, resume, additionalDocuments } = req.body;
 
-    // Check if job exists and is active
     const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
@@ -35,12 +31,10 @@ router.post('/', protect, authorize('jobseeker'), [
       return res.status(400).json({ message: 'Job is no longer accepting applications' });
     }
 
-    // Check if application deadline has passed
     if (new Date() > new Date(job.applicationDeadline)) {
       return res.status(400).json({ message: 'Application deadline has passed' });
     }
 
-    // Check if user already applied for this job
     const existingApplication = await Application.findOne({
       job: jobId,
       applicant: req.user._id
@@ -50,7 +44,6 @@ router.post('/', protect, authorize('jobseeker'), [
       return res.status(400).json({ message: 'You have already applied for this job' });
     }
 
-    // Create application
     const application = await Application.create({
       job: jobId,
       applicant: req.user._id,
@@ -59,10 +52,8 @@ router.post('/', protect, authorize('jobseeker'), [
       additionalDocuments: additionalDocuments || []
     });
 
-    // Increment application count for the job
     await Job.findByIdAndUpdate(jobId, { $inc: { applicationCount: 1 } });
 
-    // Populate job and applicant details
     await application.populate([
       { path: 'job', select: 'title companyName location type' },
       { path: 'applicant', select: 'name email profile' }
@@ -78,15 +69,12 @@ router.post('/', protect, authorize('jobseeker'), [
   }
 });
 
-// @route   GET /api/applications
-// @desc    Get user's applications
-// @access  Private
 router.get('/', protect, [
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   query('status').optional().custom((value) => {
     if (value === '' || value === undefined || value === null) {
-      return true; // Allow empty values
+      return true; 
     }
     return ['pending', 'reviewed', 'shortlisted', 'rejected', 'accepted'].includes(value);
   }).withMessage('Invalid status value')
@@ -107,19 +95,17 @@ router.get('/', protect, [
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    // Build filter
     const filter = {};
     
     if (req.user.role === 'jobseeker') {
       filter.applicant = req.user._id;
     } else if (req.user.role === 'employer') {
-      // Get jobs posted by this employer
+      
       const userJobs = await Job.find({ company: req.user._id }).select('_id');
       const jobIds = userJobs.map(job => job._id);
       filter.job = { $in: jobIds };
     }
 
-    // Status filter
     if (req.query.status && req.query.status !== '') {
       filter.status = req.query.status;
     }
@@ -161,9 +147,6 @@ router.get('/', protect, [
   }
 });
 
-// @route   GET /api/applications/:id
-// @desc    Get single application
-// @access  Private
 router.get('/:id', protect, async (req, res) => {
   try {
     const application = await Application.findById(req.params.id)
@@ -181,7 +164,6 @@ router.get('/:id', protect, async (req, res) => {
       return res.status(404).json({ message: 'Application not found' });
     }
 
-    // Check if user has access to this application
     const hasAccess = 
       application.applicant._id.toString() === req.user._id.toString() ||
       req.user.role === 'admin' ||
@@ -201,9 +183,6 @@ router.get('/:id', protect, async (req, res) => {
   }
 });
 
-// @route   PUT /api/applications/:id/status
-// @desc    Update application status
-// @access  Private (Employers and admins only)
 router.put('/:id/status', protect, authorize('employer', 'admin'), [
   body('status').isIn(['pending', 'reviewed', 'shortlisted', 'rejected', 'accepted']).withMessage('Invalid status'),
   body('notes').optional().trim().isLength({ max: 500 }).withMessage('Notes cannot exceed 500 characters')
@@ -225,7 +204,6 @@ router.put('/:id/status', protect, authorize('employer', 'admin'), [
       return res.status(404).json({ message: 'Application not found' });
     }
 
-    // Check if user owns the job (for employers)
     if (req.user.role === 'employer') {
       const job = await Job.findById(application.job);
       if (job.company.toString() !== req.user._id.toString()) {
@@ -257,9 +235,6 @@ router.put('/:id/status', protect, authorize('employer', 'admin'), [
   }
 });
 
-// @route   GET /api/applications/job/:jobId
-// @desc    Get applications for a specific job
-// @access  Private (Job owner or admin)
 router.get('/job/:jobId', protect, async (req, res) => {
   try {
     const job = await Job.findById(req.params.jobId);
@@ -268,7 +243,6 @@ router.get('/job/:jobId', protect, async (req, res) => {
       return res.status(404).json({ message: 'Job not found' });
     }
 
-    // Check if user owns the job or is admin
     if (job.company.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to view applications for this job' });
     }
@@ -287,9 +261,6 @@ router.get('/job/:jobId', protect, async (req, res) => {
   }
 });
 
-// @route   DELETE /api/applications/:id
-// @desc    Withdraw application
-// @access  Private (Application owner only)
 router.delete('/:id', protect, authorize('jobseeker'), async (req, res) => {
   try {
     const application = await Application.findById(req.params.id);
@@ -298,14 +269,12 @@ router.delete('/:id', protect, authorize('jobseeker'), async (req, res) => {
       return res.status(404).json({ message: 'Application not found' });
     }
 
-    // Check if user owns the application
     if (application.applicant.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to withdraw this application' });
     }
 
     await Application.findByIdAndDelete(req.params.id);
 
-    // Decrement application count for the job
     await Job.findByIdAndUpdate(application.job, { $inc: { applicationCount: -1 } });
 
     res.json({

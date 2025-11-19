@@ -41,7 +41,7 @@ const EmployerLogin = () => {
 
     try {
       await login(formData.email, formData.password);
-      // Wait a bit for the auth state to update
+      
       setTimeout(() => {
         navigate(from, { replace: true });
       }, 100);

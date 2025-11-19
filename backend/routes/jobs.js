@@ -6,9 +6,6 @@ const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
-// @route   GET /api/jobs
-// @desc    Get all jobs with filtering and pagination
-// @access  Public
 router.get('/', [
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
@@ -33,35 +30,28 @@ router.get('/', [
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    // Build filter object
     const filter = { isActive: true };
 
-    // Search filter
     if (req.query.search) {
       filter.$text = { $search: req.query.search };
     }
 
-    // Location filter
     if (req.query.location) {
       filter.location = { $regex: req.query.location, $options: 'i' };
     }
 
-    // Job type filter
     if (req.query.type) {
       filter.type = req.query.type;
     }
 
-    // Category filter
     if (req.query.category) {
       filter.category = { $regex: req.query.category, $options: 'i' };
     }
 
-    // Experience filter
     if (req.query.experience) {
       filter['requirements.experience'] = req.query.experience;
     }
 
-    // Salary filter
     if (req.query.minSalary || req.query.maxSalary) {
       filter['salary.min'] = {};
       if (req.query.minSalary) {
@@ -72,14 +62,12 @@ router.get('/', [
       }
     }
 
-    // Get jobs with pagination
     const jobs = await Job.find(filter)
       .populate('company', 'name company.name company.logo')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    // Get total count for pagination
     const total = await Job.countDocuments(filter);
 
     res.json({
@@ -99,9 +87,6 @@ router.get('/', [
   }
 });
 
-// @route   GET /api/jobs/:id
-// @desc    Get single job by ID
-// @access  Public
 router.get('/:id', async (req, res) => {
   try {
     const job = await Job.findById(req.params.id)
@@ -115,7 +100,6 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Job is no longer available' });
     }
 
-    // Increment view count
     job.views += 1;
     await job.save();
 
@@ -129,9 +113,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// @route   POST /api/jobs
-// @desc    Create new job
-// @access  Private (Employers only)
 router.post('/', protect, authorize('employer', 'admin'), [
   body('title').trim().isLength({ min: 5, max: 100 }).withMessage('Title must be between 5 and 100 characters'),
   body('description').trim().isLength({ min: 50, max: 2000 }).withMessage('Description must be between 50 and 2000 characters'),
@@ -168,9 +149,6 @@ router.post('/', protect, authorize('employer', 'admin'), [
   }
 });
 
-// @route   PUT /api/jobs/:id
-// @desc    Update job
-// @access  Private (Job owner or admin)
 router.put('/:id', protect, [
   body('title').optional().trim().isLength({ min: 5, max: 100 }).withMessage('Title must be between 5 and 100 characters'),
   body('description').optional().trim().isLength({ min: 50, max: 2000 }).withMessage('Description must be between 50 and 2000 characters'),
@@ -192,7 +170,6 @@ router.put('/:id', protect, [
       return res.status(404).json({ message: 'Job not found' });
     }
 
-    // Check if user owns the job or is admin
     if (job.company.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to update this job' });
     }
@@ -213,9 +190,6 @@ router.put('/:id', protect, [
   }
 });
 
-// @route   DELETE /api/jobs/:id
-// @desc    Delete job
-// @access  Private (Job owner or admin)
 router.delete('/:id', protect, async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
@@ -224,14 +198,12 @@ router.delete('/:id', protect, async (req, res) => {
       return res.status(404).json({ message: 'Job not found' });
     }
 
-    // Check if user owns the job or is admin
     if (job.company.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to delete this job' });
     }
 
     await Job.findByIdAndDelete(req.params.id);
 
-    // Also delete all applications for this job
     await Application.deleteMany({ job: req.params.id });
 
     res.json({
@@ -244,9 +216,6 @@ router.delete('/:id', protect, async (req, res) => {
   }
 });
 
-// @route   GET /api/jobs/company/:companyId
-// @desc    Get jobs by company
-// @access  Public
 router.get('/company/:companyId', async (req, res) => {
   try {
     const jobs = await Job.find({ 
