@@ -21,7 +21,6 @@ import './App.css';
 import AdminUsers from './pages/AdminUsers';
 import ProfileReadOnly from './pages/ProfileReadOnly';
 
-// Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: string[] }> = ({ 
   children, 
   allowedRoles 
@@ -48,7 +47,6 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; allowedRoles?: strin
   return <>{children}</>;
 };
 
-// Public Route Component (redirect if authenticated)
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -90,7 +88,6 @@ const AppRoutes: React.FC = () => {
               } 
             />
             
-            {/* Legacy Auth Routes (redirect to role selection) */}
             <Route 
               path="/login" 
               element={<Navigate to="/auth" replace />} 
@@ -100,7 +97,6 @@ const AppRoutes: React.FC = () => {
               element={<Navigate to="/auth" replace />} 
             />
             
-            {/* Role-based Login Routes */}
             <Route 
               path="/login/jobseeker" 
               element={
@@ -126,7 +122,6 @@ const AppRoutes: React.FC = () => {
               } 
             />
             
-            {/* Role-based Registration Routes */}
             <Route 
               path="/register/jobseeker" 
               element={
@@ -143,8 +138,6 @@ const AppRoutes: React.FC = () => {
                 </PublicRoute>
               } 
             />
-            
-            {/* Protected Routes */}
             <Route 
               path="/dashboard" 
               element={
@@ -210,7 +203,6 @@ const AppRoutes: React.FC = () => {
               }
             />
             
-            {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
